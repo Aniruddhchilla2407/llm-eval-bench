@@ -1,0 +1,27 @@
+suite: "Basic Eval Suite"
+model: "gpt-4o-mini"
+
+tests:
+  - name: "Capital city"
+    prompt: "What is the capital of France?"
+    expect:
+      - type: contains
+        value: "Paris"
+      - type: max_words
+        value: 50
+
+  - name: "Code generation"
+    prompt: "Write a Python function to reverse a string. Return only the code, no explanation."
+    expect:
+      - type: contains
+        value: "def "
+      - type: regex
+        value: "def \\w+\\("
+
+  - name: "Tone check"
+    prompt: "Write a formal email declining a job offer"
+    expect:
+      - type: not_contains
+        value: "hey"
+      - type: min_words
+        value: 30

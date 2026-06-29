@@ -1,0 +1,20 @@
+suite: "LLM Judge Suite"
+model: gemini-1.5-flash
+
+tests:
+  - name: "Simple explanation"
+    prompt: "Explain recursion to a 10 year old"
+    expect:
+      - type: max_words
+        value: 100
+      - type: llm_judge
+        rubric: "Is this explanation simple and easy for a child to understand?"
+        score_threshold: 3
+        out_of: 5
+
+  - name: "Semantic similarity"
+    prompt: "What does CPU stand for?"
+    expect:
+      - type: semantic_similarity
+        expected: "Central Processing Unit"
+        threshold: 0.7
