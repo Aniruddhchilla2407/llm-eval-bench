@@ -1,5 +1,5 @@
 suite: "Basic Eval Suite"
-model: "gpt-4o-mini"
+model: "meta-llama/Llama-3.1-8B-Instruct"
 
 tests:
   - name: "Capital city"

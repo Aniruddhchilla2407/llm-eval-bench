@@ -17,6 +17,7 @@ dependencies = [
     "anthropic>=0.20",
     "google-genai>=0.8",
     "sentence-transformers>=2.2",
+    "huggingface_hub>=0.24",
 ]
 
 [project.scripts]
