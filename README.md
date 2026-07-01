@@ -1,4 +1,5 @@
 # llm-eval-bench
+![Tests](https://github.com/Aniruddhchilla2407/llm-eval-bench/actions/workflows/test.yml/badge.svg)
 
 A lightweight, local CLI tool for evaluating LLM prompt outputs against YAML-defined test suites.
 
@@ -208,6 +209,42 @@ llm_eval/
 ├── adapters/        # one file per LLM provider
 └── evaluators/      # rule_based, semantic, llm_judge
 ```
+
+## Custom Evaluators
+
+Write your own evaluator without modifying core code:
+
+**1. Create your evaluator file:**
+
+```python
+# my_evaluator.py
+from llm_eval.evaluators.base import BaseEvaluator
+
+class NoSlangEvaluator(BaseEvaluator):
+    SLANG = ["gonna", "wanna", "gotta", "kinda", "yeah", "nope"]
+
+    def evaluate(self, output: str, **kwargs) -> dict:
+        found = [w for w in self.SLANG if w in output.lower().split()]
+        passed = len(found) == 0
+        return {
+            "passed": passed,
+            "reason": f"Slang found: {found}" if not passed else "No slang detected",
+            "score": None,
+        }
+
+EVALUATOR = NoSlangEvaluator()
+```
+
+**2. Reference it in your YAML:**
+
+```yaml
+expect:
+  - type: custom
+    custom_evaluator_path: "my_evaluator.py"
+    custom_evaluator_name: "no_slang"
+```
+
+
 ## License
 
 MIT — see [LICENSE](LICENSE)
