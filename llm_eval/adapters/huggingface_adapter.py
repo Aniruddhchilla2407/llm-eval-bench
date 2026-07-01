@@ -1,7 +1,6 @@
 import time
 from huggingface_hub import InferenceClient
-from ..evaluators.base import BaseAdapter
-
+from .base import BaseAdapter
 
 class HuggingFaceAdapter(BaseAdapter):
     def __init__(self, model: str = "meta-llama/Llama-3.1-8B-Instruct", api_key: str = None):

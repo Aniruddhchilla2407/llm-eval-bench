@@ -1,25 +1,30 @@
 from .loader import load_suite
 from .adapters import get_adapter
-from .evaluators import RULE_EVALUATORS, SemanticSimilarityEvaluator, LLMJudgeEvaluator
+from .evaluators import (
+    RULE_EVALUATORS,
+    SemanticSimilarityEvaluator,
+    LLMJudgeEvaluator,
+    EvaluatorRegistry,
+)
 
 
-def run_suite(suite_path: str, model: str, api_key: str = None, judge_model: str = None, judge_api_key: str = None) -> dict:
-    """
-    Main orchestrator:
-    1. Load suite
-    2. Get adapter
-    3. For each test: call LLM → run evaluators → collect results
-    """
+def run_suite(
+    suite_path: str,
+    model: str,
+    api_key: str = None,
+    judge_model: str = None,
+    judge_api_key: str = None,
+) -> dict:
     suite = load_suite(suite_path)
 
-    # model from CLI overrides model in yaml
     model = model or suite.get("model")
     if not model:
-        raise ValueError("No model specified. Pass --model or set 'model' in your suite file.")
+        raise ValueError(
+            "No model specified. Pass --model or set 'model' in your suite file."
+        )
 
     adapter = get_adapter(model, api_key=api_key)
 
-    # judge adapter — reuse main adapter if no separate judge model specified
     if judge_model:
         judge_adapter = get_adapter(judge_model, api_key=judge_api_key)
     else:
@@ -35,7 +40,6 @@ def run_suite(suite_path: str, model: str, api_key: str = None, judge_model: str
         prompt = test["prompt"]
         system_prompt = test.get("system_prompt", None)
 
-        # call the LLM
         try:
             llm_result = adapter.complete(prompt, system_prompt=system_prompt)
             output = llm_result["text"]
@@ -48,8 +52,8 @@ def run_suite(suite_path: str, model: str, api_key: str = None, judge_model: str
             latency = 0
             error = str(e)
 
-        # run each evaluator
         eval_results = []
+
         for expectation in test["expect"]:
             eval_type = expectation.get("type")
 
@@ -73,6 +77,23 @@ def run_suite(suite_path: str, model: str, api_key: str = None, judge_model: str
                         score_threshold=expectation.get("score_threshold", 4),
                         out_of=expectation.get("out_of", 5),
                     )
+
+                elif eval_type == "custom":
+                    # load and run custom evaluator from user-provided file
+                    custom_path = expectation.get("custom_evaluator_path")
+                    custom_name = expectation.get("custom_evaluator_name", "custom")
+
+                    if not custom_path:
+                        raise ValueError(
+                            "Custom evaluator requires 'custom_evaluator_path' in expect block"
+                        )
+
+                    # load from file if not already registered
+                    if not EvaluatorRegistry.get(custom_name):
+                        EvaluatorRegistry.load_from_file(custom_name, custom_path)
+
+                    evaluator = EvaluatorRegistry.get(custom_name)
+                    result = evaluator.evaluate(output, **expectation)
 
                 else:
                     result = {
@@ -111,11 +132,13 @@ def run_suite(suite_path: str, model: str, api_key: str = None, judge_model: str
     }
 
 
-def compare_suites(suite_path: str, baseline_model: str, candidate_model: str,
-                   baseline_api_key: str = None, candidate_api_key: str = None) -> dict:
-    """
-    Run the same suite against two models and return both results for comparison.
-    """
+def compare_suites(
+    suite_path: str,
+    baseline_model: str,
+    candidate_model: str,
+    baseline_api_key: str = None,
+    candidate_api_key: str = None,
+) -> dict:
     baseline = run_suite(suite_path, baseline_model, api_key=baseline_api_key)
     candidate = run_suite(suite_path, candidate_model, api_key=candidate_api_key)
 

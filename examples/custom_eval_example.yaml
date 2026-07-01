@@ -1,0 +1,20 @@
+suite: "Custom Evaluator Example"
+model: meta-llama/Llama-3.1-8B-Instruct
+
+tests:
+  - name: "Professional tone check"
+    prompt: "Write a short professional email introducing yourself to a new client"
+    expect:
+      - type: min_words
+        value: 20
+      - type: custom
+        custom_evaluator_path: "examples/my_custom_evaluator.py"
+        custom_evaluator_name: "professional_tone"
+
+  - name: "Factual answer"
+    prompt: "What does API stand for?"
+    expect:
+      - type: contains
+        value: "Application"
+      - type: max_words
+        value: 50
