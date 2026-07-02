@@ -85,11 +85,12 @@ Results: 3/3 passed  |  Avg latency: 1.4s  |  Avg tokens: 54
 
 ## Supported Models
 
-| Provider  | Models                                      |
-|-----------|---------------------------------------------|
-| OpenAI    | `gpt-4o`, `gpt-4o-mini`, `gpt-3.5-turbo`  |
-| Anthropic | `claude-sonnet-4-6`, `claude-haiku-4-5-20251001` |
-| Gemini    | `gemini-2.0-flash`, `gemini-1.5-flash`, `gemini-1.5-pro` |
+| Provider     | Models                                                                    |
+|--------------|---------------------------------------------------------------------------|
+| OpenAI       | `gpt-4o`, `gpt-4o-mini`, `gpt-3.5-turbo`                                |
+| Anthropic    | `claude-sonnet-4-6`, `claude-haiku-4-5-20251001`                         |
+| Gemini       | `gemini-2.0-flash`, `gemini-1.5-flash`, `gemini-1.5-pro`                |
+| Hugging Face | `meta-llama/Llama-3.1-8B-Instruct`, `mistralai/Mistral-7B-Instruct-v0.3` |
 
 ---
 
