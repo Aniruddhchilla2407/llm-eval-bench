@@ -1,6 +1,6 @@
 [project]
 name = "llm-eval-bench"
-version = "0.1.0"
+version = "0.1.1"
 description = "A local CLI tool for evaluating LLM prompt outputs against test suites"
 readme = "README.md"
 license = { file = "LICENSE" }

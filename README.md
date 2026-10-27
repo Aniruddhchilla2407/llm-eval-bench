@@ -1,5 +1,6 @@
 # llm-eval-bench
 ![Tests](https://github.com/Aniruddhchilla2407/llm-eval-bench/actions/workflows/test.yml/badge.svg)
+![Pypi links](https://pypi.org/project/llm-eval-bench/0.1.1/)
 
 A lightweight, local CLI tool for evaluating LLM prompt outputs against YAML-defined test suites.
 
